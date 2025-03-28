@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - "main"
+
+permissions:
+  contents: read
       
 jobs:
   go-lint:
@@ -11,28 +14,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.24'  # Change to stable version unless you *really* need 1.24
+          go-version: '1.24'
 
       - name: Download dependencies
         run: go mod download
         working-directory: src
 
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3
+      - name: Run Lint Go
+        uses: golangci/golangci-lint-action@v7
         with:
-          version: v2.0.2
+          version: ${{ env.GOLANGCI_LINT_VERSION }}
           working-directory: src
           skip-pkg-cache: true
           skip-build-cache: true
-
-      - name: Verify golangci-lint version
-        run: golangci-lint --version
-
 
   docker-lint:
     name: Lint Dockerfile
