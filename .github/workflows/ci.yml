@@ -7,6 +7,10 @@ on:
 
 permissions:
   contents: read
+  packages: write  # Needed for GHCR push
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}:latest
       
 jobs:
   go-lint:
@@ -45,3 +49,56 @@ jobs:
         with:
           dockerfile: ./Dockerfile
 
+  image-build-and-test:
+    name: Build, Scan & Test Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (multi-platform, no push)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          load: true
+          tags: sdxapp:test
+
+      - name: Install Trivy
+        uses: aquasecurity/trivy-action@v0.13.1
+        with:
+          image-ref: sdxapp:test
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
+
+      - name: Run test container
+        run: |
+          docker run -d --rm -p 8080:8080 --name recipe-api sdxapp:test
+          sleep 5
+
+      - name: Run Python integration test
+        run: python3 api-test-example.py
+
+      - name: Stop container
+        if: always()
+        run: docker stop recipe-api
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push to GHCR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.IMAGE_NAME }}
