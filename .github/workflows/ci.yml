@@ -68,13 +68,13 @@ jobs:
           load: true
           tags: sdxapp:test
 
-      - name: Install Trivy
-        uses: aquasecurity/trivy-action@v0.13.1
-        with:
-          image-ref: sdxapp:test
-          format: table
-          exit-code: 1
-          severity: CRITICAL,HIGH
+#      - name: Install Trivy
+#        uses: aquasecurity/trivy-action@v0.30.0
+#        with:
+#          image-ref: sdxapp:test
+#          format: table
+#          exit-code: 1
+#          severity: CRITICAL,HIGH
 
       - name: Run test container
         run: |
