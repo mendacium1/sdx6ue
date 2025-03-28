@@ -38,4 +38,5 @@ jobs:
       run: hadolint ue1/Dockerfile
 
     # --- Build Docker image ---
-    - name:
+    - name: Build the Docker image
+      run: docker build ue1/ --file ue1/Dockerfile --tag ue1-app:$(date +%s)
