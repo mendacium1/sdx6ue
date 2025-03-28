@@ -1,0 +1,41 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # --- Lint Go code ---
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+
+    - name: Install golangci-lint
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+
+    - name: Run golangci-lint
+      run: |
+        cd ue1
+        $(go env GOPATH)/bin/golangci-lint run ./...
+
+    # --- Lint Dockerfile ---
+    - name: Install hadolint
+      run: |
+        wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+        chmod +x /bin/hadolint
+
+    - name: Run hadolint
+      run: hadolint ue1/Dockerfile
+
+    # --- Build Docker image ---
+    - name:
