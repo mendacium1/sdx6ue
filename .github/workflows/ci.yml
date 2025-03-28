@@ -79,8 +79,8 @@ jobs:
       - name: Run test container and python test
         run: |
           docker run -d --rm -p 8080:8080 --name recipe-api sdxapp:test
-          sleep 60
           python3 test-recipe.py
+          sleep 60
 
       - name: Stop container
         if: always()
