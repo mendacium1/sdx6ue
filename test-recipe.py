@@ -1,16 +1,32 @@
 import unittest
 import requests
+import time
 
 class TestRecipeAPI(unittest.TestCase):
     BASE_URL = "http://localhost:8080"
     RECIPES_URL = f"{BASE_URL}/recipes"
+    HEALTH_URL = f"{BASE_URL}/health"
 
     def setUp(self):
+        self.wait_for_service()
         self.sample_recipe = {
             "name": "Spaghetti Bolognese",
             "description": "A classic Italian pasta dish",
             "ingredients": ["spaghetti", "ground beef", "tomato sauce"]
         }
+
+    def wait_for_service(self, timeout=20):
+        print("Waiting for /health endpoint to return 200...")
+        for _ in range(timeout):
+            try:
+                response = requests.get(self.HEALTH_URL)
+                if response.status_code == 200:
+                    print("Service is up!")
+                    return
+            except requests.exceptions.ConnectionError:
+                pass
+            time.sleep(1)
+        raise RuntimeError("Timed out waiting for the service to become ready.")
 
     def test_create_and_fetch_recipe(self):
         # Create a new recipe
@@ -32,13 +48,12 @@ class TestRecipeAPI(unittest.TestCase):
         recipes = get_response.json()
         self.assertIsInstance(recipes, list)
 
-        # Confirm the newly created recipe is in the list
         found = any(
-            r["ID"] == created_id
-            and r["name"] == self.sample_recipe["name"]
+            r["ID"] == created_id and r["name"] == self.sample_recipe["name"]
             for r in recipes
         )
         self.assertTrue(found, "Created recipe not found in recipe list")
 
 if __name__ == '__main__':
     unittest.main()
+
