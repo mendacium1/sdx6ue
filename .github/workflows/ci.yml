@@ -79,7 +79,7 @@ jobs:
       - name: Run test container
         run: |
           docker run -d --rm -p 8080:8080 --name recipe-api sdxapp:test
-          sleep 5
+          sleep 60
 
       - name: Run Python integration test
         run: python3 test-recipe.py
