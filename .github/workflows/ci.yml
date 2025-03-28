@@ -30,6 +30,10 @@ jobs:
           skip-pkg-cache: true
           skip-build-cache: true
 
+      - name: Verify golangci-lint version
+        run: golangci-lint --version
+
+
   docker-lint:
     name: Lint Dockerfile
     runs-on: ubuntu-latest
