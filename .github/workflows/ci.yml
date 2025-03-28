@@ -76,13 +76,11 @@ jobs:
 #          exit-code: 1
 #          severity: CRITICAL,HIGH
 
-      - name: Run test container
+      - name: Run test container and python test
         run: |
           docker run -d --rm -p 8080:8080 --name recipe-api sdxapp:test
           sleep 60
-
-      - name: Run Python integration test
-        run: python3 test-recipe.py
+          python3 test-recipe.py
 
       - name: Stop container
         if: always()
