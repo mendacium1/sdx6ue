@@ -82,7 +82,7 @@ jobs:
           sleep 5
 
       - name: Run Python integration test
-        run: python3 api-test-example.py
+        run: python3 test-recipe.py
 
       - name: Stop container
         if: always()
