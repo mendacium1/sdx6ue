@@ -5,6 +5,8 @@
 ##
 FROM golang:1.24-bullseye AS build
 
+RUN apt-get update && apt-get upgrade -y && apt-get install -y ...
+
 WORKDIR /app
 
 COPY src ./
