@@ -11,6 +11,7 @@ permissions:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository }}:latest
+  GOLANGCI_LINT_VERSION: v1.55.2
       
 jobs:
   go-lint:
@@ -27,6 +28,10 @@ jobs:
 
       - name: Download dependencies
         run: go mod download
+        working-directory: src
+        
+      - name: Update Go dependencies
+        run: go get -u ./...
         working-directory: src
 
       - name: Run Lint Go
@@ -68,13 +73,13 @@ jobs:
           load: true
           tags: sdxapp:test
 
-#      - name: Install Trivy
-#        uses: aquasecurity/trivy-action@v0.30.0
-#        with:
-#          image-ref: sdxapp:test
-#          format: table
-#          exit-code: 1
-#          severity: CRITICAL,HIGH
+      - name: Install Trivy
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          image-ref: sdxapp:test
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
 
       - name: Run test container
         run: |
