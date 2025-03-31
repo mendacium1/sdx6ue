@@ -62,7 +62,7 @@ jobs:
       - uses: docker/build-push-action@v5 # Image bauen
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           load: true
           tags: sdxapp:test
 
