@@ -1,31 +1,31 @@
 services:
   app:
-    image: sdxapp:test
-    build: .
+    image: sdxapp:test # Verwende Image "sdxapp:test"
+    build: . # Baue das Image aus dem aktuellen Verzeichnis
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8080:8080" # Bindet Port 8080 lokal an 127.0.0.1
     depends_on:
       db:
-        condition: service_healthy
-        restart: true
+        condition: service_healthy # Startet erst, wenn DB gesund ist
+        restart: true # Neustart bei Fehlern
     environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=postgres
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-    restart: unless-stopped
+      - DB_HOST=db # DB-Host
+      - DB_PORT=5432 # Port der DB
+      - DB_NAME=postgres # DB-Name
+      - DB_USER=postgres # DB-Benutzername
+      - DB_PASSWORD=postgres # DB-Passwort
+    restart: unless-stopped # Neustart außer bei manuellem Stop
 
   db:
-    image: postgres:15
-    restart: unless-stopped
+    image: postgres:15 # Verwendet Postgres 15 
+    restart: unless-stopped # Neustart, außer bei manuellen Stop
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres # DB-Benutzername
+      - POSTGRES_PASSWORD=postgres # DB-Passwort
+      - POSTGRES_DB=postgres # DB-Name
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
-      interval: 10s
-      retries: 5
-      start_period: 5s
-      timeout: 10s
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"] # Prüft, ob die DB bereit ist
+      interval: 10s # Alle 10 sek.
+      retries: 5 # Max 5 Versuche
+      start_period: 5s # 5s Warten vor erster Prüfung
+      timeout: 10s # Timeout pro Check
