@@ -52,31 +52,25 @@ jobs:
         with:
           dockerfile: ./Dockerfile
 
-  docker-build:
-    name: Build Docker Image
-    runs-on: ubuntu-latest
-    needs: [go-lint, docker-lint]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3 # Buildx aktivieren
-      - uses: docker/build-push-action@v5 # Image bauen
-        with:
-          context: .
-          platforms: linux/amd64
-          load: true
-          tags: sdxapp:test
-
-  image-scan:
-    name: Scan Docker Image
-    runs-on: ubuntu-latest
-    needs: docker-build
-    steps:
-      - uses: aquasecurity/trivy-action@0.30.0 # Scan auf Sicherheitslücken
-        with:
-          image-ref: sdxapp:test
-          format: table
-          exit-code: 0 # Bei gefundenen Schwachstellen trotzdem weitermachen
-          severity: CRITICAL,HIGH
+image-scan:
+  name: Build & Scan Image with Trivy
+  runs-on: ubuntu-latest
+  needs: [go-lint, docker-lint]
+  steps:
+    - uses: actions/checkout@v4
+    - uses: docker/setup-buildx-action@v3 # Buildx aktivieren
+    - uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64         # Nur eine Plattform erlaubt bei load
+        load: true                     # Image lokal laden
+        tags: sdxapp:test              # Muss mit Trivy-Scan übereinstimmen
+    - uses: aquasecurity/trivy-action@0.30.0
+      with:
+        image-ref: sdxapp:test
+        format: table
+        exit-code: 0
+        severity: CRITICAL,HIGH
 
   integration-test:
     name: Run Integration Test
