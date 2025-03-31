@@ -75,7 +75,7 @@ jobs:
   integration-test:
     name: Run Integration Test
     runs-on: ubuntu-latest
-    needs: docker-build
+    needs: image-scan
     steps:
       - uses: actions/checkout@v4
       - run: docker compose up -d
