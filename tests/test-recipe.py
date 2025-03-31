@@ -3,13 +3,13 @@ import requests
 import time
 
 class TestRecipeAPI(unittest.TestCase):
-    BASE_URL = "http://localhost:8080"
-    RECIPES_URL = f"{BASE_URL}/recipes"
-    HEALTH_URL = f"{BASE_URL}/health"
+    BASE_URL = "http://localhost:8080" # Basis-URL der API
+    RECIPES_URL = f"{BASE_URL}/recipes" # Endpoint für Rezepte
+    HEALTH_URL = f"{BASE_URL}/health" # Healthcheck-Endpoint
 
     def setUp(self):
-        self.wait_for_service()
-        self.sample_recipe = {
+        self.wait_for_service() # Warte auf API-Verfügbarkeit
+        self.sample_recipe = { # Beispielrezept
             "name": "Spaghetti Bolognese",
             "description": "A classic Italian pasta dish",
             "ingredients": ["spaghetti", "ground beef", "tomato sauce"]
@@ -29,7 +29,7 @@ class TestRecipeAPI(unittest.TestCase):
         raise RuntimeError("Timed out waiting for the service to become ready.")
 
     def test_create_and_fetch_recipe(self):
-        # Create a new recipe
+        # Rezept erstellen
         post_response = requests.post(self.RECIPES_URL, json=self.sample_recipe)
         self.assertEqual(post_response.status_code, 200)
 
@@ -41,13 +41,14 @@ class TestRecipeAPI(unittest.TestCase):
 
         created_id = created_recipe["ID"]
 
-        # Fetch all recipes
+        # Alle Rezepte abrufen
         get_response = requests.get(self.RECIPES_URL)
         self.assertEqual(get_response.status_code, 200)
 
         recipes = get_response.json()
         self.assertIsInstance(recipes, list)
 
+        # Geprüft: Rezept mit richtiger ID vorhanden
         found = any(
             r["ID"] == created_id and r["name"] == self.sample_recipe["name"]
             for r in recipes
@@ -55,5 +56,5 @@ class TestRecipeAPI(unittest.TestCase):
         self.assertTrue(found, "Created recipe not found in recipe list")
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main() # Testlauf starten
 
