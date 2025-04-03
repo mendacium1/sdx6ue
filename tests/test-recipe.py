@@ -55,6 +55,27 @@ class TestRecipeAPI(unittest.TestCase):
         )
         self.assertTrue(found, "Created recipe not found in recipe list")
 
+    def test_create_recipe_missing_fields(self):
+        incomplete_recipe = {
+            "name": "No Ingredients"
+            # Fehlende Beschreibung und Zutaten
+        }
+        response = requests.post(self.RECIPES_URL, json=incomplete_recipe)
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_recipe_invalid_ingredients_type(self):
+        invalid_recipe = {
+            "name": "Invalid Ingredients",
+            "description": "This should fail",
+            "ingredients": "not-a-list"
+        }
+        response = requests.post(self.RECIPES_URL, json=invalid_recipe)
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_recipe_empty_payload(self):
+        response = requests.post(self.RECIPES_URL, json={})
+        self.assertEqual(response.status_code, 400)
+
 if __name__ == '__main__':
-    unittest.main() # Testlauf starten
+    unittest.main(verbosity=2) # Testlauf starten
 
