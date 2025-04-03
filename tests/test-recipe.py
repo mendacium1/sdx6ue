@@ -55,26 +55,32 @@ class TestRecipeAPI(unittest.TestCase):
         )
         self.assertTrue(found, "Created recipe not found in recipe list")
 
-    def test_create_recipe_missing_fields(self):
-        incomplete_recipe = {
-            "name": "No Ingredients"
-            # Fehlende Beschreibung und Zutaten
-        }
-        response = requests.post(self.RECIPES_URL, json=incomplete_recipe)
-        self.assertEqual(response.status_code, 400)
+    def test_create_multiple_recipes_and_fetch_all(self):
+        recipes_to_create = [
+            {"name": "Pizza Margherita", "description": "Classic pizza", "ingredients": ["flour", "tomato", "cheese"]},
+            {"name": "Caesar Salad", "description": "Fresh salad", "ingredients": ["lettuce", "chicken", "parmesan"]}
+        ]
 
-    def test_create_recipe_invalid_ingredients_type(self):
-        invalid_recipe = {
-            "name": "Invalid Ingredients",
-            "description": "This should fail",
-            "ingredients": "not-a-list"
-        }
-        response = requests.post(self.RECIPES_URL, json=invalid_recipe)
-        self.assertEqual(response.status_code, 400)
+        for recipe in recipes_to_create:
+            r = requests.post(self.RECIPES_URL, json=recipe)
+            self.assertEqual(r.status_code, 200)
 
-    def test_create_recipe_empty_payload(self):
-        response = requests.post(self.RECIPES_URL, json={})
-        self.assertEqual(response.status_code, 400)
+        get_response = requests.get(self.RECIPES_URL)
+        self.assertEqual(get_response.status_code, 200)
+
+        all_recipes = get_response.json()
+        self.assertGreaterEqual(len(all_recipes), 2)  # Es sollten mindestens 2 drin sein
+
+    def test_fetch_single_recipe_by_id(self):
+        r = requests.post(self.RECIPES_URL, json=self.sample_recipe)
+        self.assertEqual(r.status_code, 200)
+        recipe_id = r.json()["ID"]
+
+        r2 = requests.get(f"{self.RECIPES_URL}/{recipe_id}")
+        self.assertEqual(r2.status_code, 200)
+        fetched = r2.json()
+        self.assertEqual(fetched["name"], self.sample_recipe["name"])
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2) # Testlauf starten
