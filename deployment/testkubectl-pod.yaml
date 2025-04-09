@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testkubectl
+spec:
+  serviceAccountName: pod-reader
+  containers:
+  - name: kubectl
+    image: bitnami/kubectl
+    command: ["sleep", "3600"]
