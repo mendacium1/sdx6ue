@@ -16,7 +16,7 @@ jobs:
         uses: azure/setup-helm@v3
 
       - name: Package Helm chart
-        run: helm package ./recipe-service
+        run: helm package ./recipe
 
       - name: Upload Helm chart to GitHub Releases
         uses: softprops/action-gh-release@v1
