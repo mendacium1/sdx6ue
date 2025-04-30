@@ -2,8 +2,8 @@ name: Helm Chart Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'  # z. B. v1.0.0
 
 jobs:
   release:
